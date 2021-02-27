@@ -6,8 +6,14 @@
 git clone --recurse-submodules https://github.com/HiGal/RSSE.git
 ```
 
+if cloning fails try
+
+```shell
+git submodule update --force --recursive --init --remote
+```
+
 ###Install dependencies
 
 ```shell
-conda <env_name> create -f environment.yml
+pip install -r requirements.txt
 ```
