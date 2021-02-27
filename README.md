@@ -30,8 +30,9 @@ ssh -N -f -L localhost:16006:localhost:6006 <user@remote>
 ```
 
 on the remote machine, run:
-
+```shell
 tensorboard --logdir <path> --port 6006
+```
 
 Then, navigate to (in this example) http://localhost:16006 on your local machine.
 
