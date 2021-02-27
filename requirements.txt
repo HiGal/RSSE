@@ -12,7 +12,7 @@ sentencepiece==0.1.91
 tensorboard==2.4.1
 tokenizers==0.10.1
 torch==1.7.1
-torchaudio==0.7.0a0+a853dff
+torchaudio==0.7.0
 torchvision==0.8.2
 tqdm==4.49.0
 transformers @ git+https://github.com/huggingface/transformers@98569d4ba237d84714f6c15e2c301fd22d42d2b1
