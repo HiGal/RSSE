@@ -1,12 +1,12 @@
-#Russian Simple Sentence Evaluation
+# Russian Simple Sentence Evaluation
 
-###Clone repository
+### Clone repository
 
 ```shell
 git clone --recurse-submodules https://github.com/HiGal/RSSE.git
 ```
 
-###Install dependencies
+### Install dependencies
 
 ```shell
 conda <env_name> create -f environment.yml
