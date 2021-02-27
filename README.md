@@ -41,6 +41,6 @@ explanation of ssh command:
 
 `-f` : put ssh in the background
 
-`-L` [machine1]: [portA] : [<machine2>] : [<portB>]
+`-L` [machine1]: [portA] : [machine2] : [portB]
 
 forward [machine1]:[portA] (local scope) to [machine2]:[portB] (remote scope)
