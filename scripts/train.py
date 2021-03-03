@@ -8,6 +8,7 @@ from datasets.wikisimple import WikiSimpleDataset, collate_sentences
 import yaml
 from addict import Dict
 from fire import Fire
+from transformers import AutoTokenizer
 
 if __name__ == '__main__':
     with open("../configs/default_transformer.yaml", "r") as stream:
@@ -15,7 +16,6 @@ if __name__ == '__main__':
 
     config = Fire(Dict(config))
 
-    print(config.datasets)
 
     train_dataset = WikiSimpleDataset(config.datasets.root, split=config.datasets.split.train,
                                       prepare=config.datasets.prepare)
@@ -25,16 +25,18 @@ if __name__ == '__main__':
     params = config.parameters
     device = torch.device(params.device)
 
-    tokenizer = load_tokenizer(params.tokenizer)
+    # tokenizer = load_tokenizer(params.tokenizer)
+    tokenizer = AutoTokenizer.from_pretrained("DeepPavlov/rubert-base-cased-sentence")
     train_iterator = DataLoader(train_dataset, batch_size=params.batch_size, shuffle=True,
                                 collate_fn=collate_sentences(tokenizer))
     valid_iterator = DataLoader(val_dataset, batch_size=params.batch_size, shuffle=True,
                                 collate_fn=collate_sentences(tokenizer))
+    tokenizer.model_max_length = params.max_len
 
-    params.src_vocab_size = tokenizer.get_vocab_size()
-    params.trg_vocab_size = tokenizer.get_vocab_size()
+    params.src_vocab_size = tokenizer.vocab_size
+    params.trg_vocab_size = tokenizer.vocab_size
     # Model hyperparameters
-    params.src_pad_idx = tokenizer.token_to_id("[PAD]")
+    params.src_pad_idx = tokenizer.pad_token_id
 
     model = Transformer(
         device,

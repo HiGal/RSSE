@@ -34,11 +34,10 @@ class WikiSimpleDataset(Dataset):
 def collate_sentences(tokenizer: Tokenizer) -> (torch.LongTensor, torch.LongTensor):
     def collate_fn(batch):
         batch = [list(i) for i in zip(*batch)]
-        X_batch = tokenizer.encode_batch(batch[0])
-        y_batch = tokenizer.encode_batch(batch[1])
-        X_batch = torch.LongTensor([x.ids for x in X_batch])
-        y_batch = torch.LongTensor([y.ids for y in y_batch])
-        return X_batch, y_batch
+        X_batch = tokenizer(batch[0], padding=True, truncation=True, return_tensors='pt')
+        y_batch = tokenizer(batch[1], padding=True, truncation=True, return_tensors='pt')
+        return X_batch.input_ids, y_batch.input_ids
+
     return collate_fn
 
 

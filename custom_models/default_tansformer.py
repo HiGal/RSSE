@@ -89,9 +89,14 @@ class Transformer(nn.Module):
         # embed_trg = self.pos_enc(self.trg_word_embedding(trg)*math.sqrt(self.d_model))
 
         src_padding_mask = self.make_src_mask(src)
-        trg_mask = self.transformer.generate_square_subsequent_mask(trg_seq_length).to(
-            self.device
-        )
+        try:
+            trg_mask = self.transformer.generate_square_subsequent_mask(trg_seq_length).to(
+                self.device
+            )
+        except:
+            print(trg)
+            print(trg_seq_length, trg.shape)
+
 
         out = self.transformer(
             embed_src,
@@ -117,7 +122,7 @@ class Trainer:
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.tokenizer = tokenizer
 
-        self.load_model = False
+        self.load_model = cfg.load_model
         self.save_model = True
 
         self.writer = SummaryWriter()
@@ -140,7 +145,8 @@ class Trainer:
             os.makedirs(self.cfg.model_dir)
 
         if self.cfg.load_checkpoint:
-            load_checkpoint(torch.load(f"{cfg.model_dir}/my_checkpoint.pth.tar"), self.model, self.optimizer)
+            print("here")
+            self.model, self.optimizer = load_checkpoint(torch.load(f"{cfg.model_dir}/my_checkpoint.pth.tar"), self.model, self.optimizer)
 
     def train_one_epoch(self, train_iterator):
         self.model.train()
@@ -205,7 +211,8 @@ class Trainer:
             target = target.permute(1, 0).to(self.device)
 
             # Forward prop
-            output = self.model(inp_data, target[:-1])
+            with torch.no_grad():
+                output = self.model(inp_data, target[:-1])
 
             # Output is of shape (trg_len, batch_size, output_dim) but Cross Entropy Loss
             # doesn't take input in that form. For example if we have MNIST we want to have
@@ -226,6 +233,7 @@ class Trainer:
 
     def train(self, train_iterator, val_iterator):
         sentence = self.cfg.valid_sentence
+        train_loss = 0
         for epoch in range(self.num_epochs):
             print(f"[Epoch {epoch} / {self.num_epochs}]")
 

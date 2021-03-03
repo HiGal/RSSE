@@ -7,6 +7,7 @@ from tokenizers.pre_tokenizers import Whitespace
 from tokenizers.processors import TemplateProcessing
 import os
 
+
 # spacy_ru = Russian()
 #
 #
@@ -41,13 +42,11 @@ def prepare_raw_wikidata(data_path):
 
 
 def shorten_sentence(model, sentence, tokenizer, device, max_length=50):
-
-    tokens = tokenizer.encode(sentence)
-
+    sentence_tensor = tokenizer.encode(sentence, truncation=True, return_tensors='pt').t().to(device)
     # Convert to Tensor
-    sentence_tensor = torch.LongTensor(tokens.ids).unsqueeze(1).to(device)
+    # sentence_tensor = torch.LongTensor(tokens).t().to(device)
 
-    outputs = [tokenizer.token_to_id("[SOS]")]
+    outputs = [tokenizer.cls_token_id]
     for i in range(max_length):
         trg_tensor = torch.LongTensor(outputs).unsqueeze(1).to(device)
         with torch.no_grad():
@@ -55,8 +54,9 @@ def shorten_sentence(model, sentence, tokenizer, device, max_length=50):
         best_guess = output.argmax(2)[-1, :].item()
         outputs.append(best_guess)
 
-        if best_guess == tokenizer.token_to_id("[EOS]"):
+        if best_guess == tokenizer.sep_token_id:
             break
+    outputs = outputs[1:-1]
     translated_sentence = tokenizer.decode(outputs)
     # remove start token
     return translated_sentence
@@ -71,6 +71,7 @@ def load_checkpoint(checkpoint, model, optimizer):
     print("=> Loading checkpoint")
     model.load_state_dict(checkpoint["state_dict"])
     optimizer.load_state_dict(checkpoint["optimizer"])
+    return model, optimizer
 
 
 def train_tokenizer(raw_data_path, out_path):
@@ -98,4 +99,3 @@ def load_tokenizer(path_to_tokenizer):
     if not os.path.exists(path_to_tokenizer):
         return train_tokenizer("../data/WikiSimple-translated/preprocessed", "../data/WikiSimple-translated/")
     return Tokenizer.from_file(path_to_tokenizer)
-

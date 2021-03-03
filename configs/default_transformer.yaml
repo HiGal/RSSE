@@ -10,11 +10,11 @@ parameters:
   device: cuda
   tokenizer: ../data/WikiSimple-translated/tokenizer-wikisimple.json
   embedding_size: 512
-  num_heads: 16
+  num_heads: 8
   num_encoder_layers: 3
   num_decoder_layers: 3
   dropout: 0.10
-  max_len: 256
+  max_len: 60
   forward_expansion: 2048
   activation: gelu
   optimizer:
