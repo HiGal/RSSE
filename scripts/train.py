@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader
 from custom_models.default_tansformer import Trainer, Transformer
 from custom_models.transformer import make_model
 from utils.processing import load_tokenizer
-from datasets.wikisimple import WikiSimpleDataset, collate_sentences
+from dataset.wikisimple import WikiSimpleDataset, collate_sentences
 import yaml
 from addict import Dict
 from fire import Fire
